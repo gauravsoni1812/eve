@@ -7,19 +7,23 @@ import axios from "axios";
 const Header = () => {  
   const router = useRouter()
 
-  const logout = async () => {
+  const logoutfunction = async() => {
+    console.log("hello world")
     try {
       const response = await axios.get("/api/users/logout");
       console.log(response.data);
-      // toast.success("Logout successfull");
+ 
       router.push("/login");
     } catch (error: any) {
       console.log("error message", error.message);
-      // toast.error(error.message);
+ 
     }
   };
+
+
+
   return (
-    <header className="w-full border-b">
+    <header className="w-full bg-[#171717]">
       <div className="wrapper flex items-center justify-between">
         <Link href="/" className="w-36">
           <div className="text-[20px] font-[600]"> CLOUDREDUX EVENT</div>
@@ -36,7 +40,9 @@ const Header = () => {
               </div>
          </div>
         <div>
-          <Button onClick={logout} > Logout </Button>
+           <Button onClick={logoutfunction} className="bg-green-500">
+             logout
+           </Button>
         </div>
       </div>
     </header>

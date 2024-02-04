@@ -1,8 +1,8 @@
 import { type ClassValue, clsx } from 'clsx'
-
+import { cookies } from 'next/headers'
 import { twMerge } from 'tailwind-merge'
 import qs from 'query-string'
-
+import jwt from 'jsonwebtoken'
 import { UrlQueryParams, RemoveUrlQueryParams } from '@/types'
 
 export function cn(...inputs: ClassValue[]) {
@@ -91,3 +91,11 @@ export const handleError = (error: unknown) => {
   console.error(error)
   throw new Error(typeof error === 'string' ? error : JSON.stringify(error))
 }
+
+// export const getloggedInUserId = ()=>{
+//   const cookie = cookies();
+//   const obj =cookie.get("token")
+ 
+//  const user : any = obj ? jwt.decode(obj.value): null;
+//  return user.id;
+// }

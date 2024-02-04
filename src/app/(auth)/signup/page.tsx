@@ -3,23 +3,18 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import toast from "react-hot-toast";
-import { setDefaultAutoSelectFamily } from "net";
-import { useForm } from "react-hook-form";
 import Image from "next/image";
 
 export default function SignupPage() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+ 
   const router = useRouter();
   const [user, setUser] = React.useState({
+    firstname: "",
+    lastname: "",
+    username: "",
     email: "",
     password: "",
   });
- 
 
   const onSignup = async () => {
     try {
@@ -32,60 +27,13 @@ export default function SignupPage() {
   };
 
   return (
-    // <div className="flex flex-col items-center justify-center gap-3 min-h-screen py-2">
-    //   <h1
-    //     className={`p-2 rounded-md ${
-    //       loading === true ? " bg-red-500" : " bg-blue-500"
-    //     }`}
-    //   >
-    //     {loading ? "Processing" : "Signup"}
-    //   </h1>
-    //   <hr />
-    //   <label htmlFor="username">Username</label>
-    //   <input
-    //     className="p-2 rounded-md text-black"
-    //     type="text"
-    //     id="username"
-    //     value={user.username}
-    //     onChange={(e) => setUser({ ...user, username: e.target.value })}
-    //     placeholder="username"
-    //   />
-
-    //   <label htmlFor="email">Email</label>
-    //   <input
-    //     className="p-2 rounded-md text-black"
-    //     type="text"
-    //     id="email"
-    //     value={user.email}
-    //     onChange={(e) => setUser({ ...user, email: e.target.value })}
-    //     placeholder="email"
-    //   />
-
-    //   <label htmlFor="password">Password</label>
-    //   <input
-    //     className="p-2 rounded-md text-black"
-    //     type="text"
-    //     id="password"
-    //     value={user.password}
-    //     onChange={(e) => setUser({ ...user, password: e.target.value })}
-    //     placeholder="password"
-    //   />
-
-    //   <button
-    //     onClick={onSignup}
-    //     className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600"
-    //   >
-    //     {buttonDisabled ? "Nosignup" : "Signup"}
-    //   </button>
-
-    //   <Link href={"/login"}>Visit Login</Link>
-    // </div>
-
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <Image
           className="mx-auto h-10 w-auto"
-          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+          src="/next.svg"
+          height={24}
+          width={24}
           alt="Your Company"
         />
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
@@ -94,9 +42,59 @@ export default function SignupPage() {
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <div
-          className="space-y-6"
-        >
+        <div className="space-y-6">
+          <div>
+            <label
+              htmlFor="firstname"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Firstname
+            </label>
+            <div className="mt-2">
+              <input
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                type="text"
+                id="firstname"
+                value={user.firstname}
+                onChange={(e) => setUser({ ...user, firstname: e.target.value })}
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="lastname"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Lastname
+            </label>
+            <div className="mt-2">
+              <input
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                type="text"
+                id="lastname"
+                value={user.lastname}
+                onChange={(e) => setUser({ ...user, lastname: e.target.value })}
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Username
+            </label>
+            <div className="mt-2">
+              <input
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                type="text"
+                id="username"
+                value={user.username}
+                onChange={(e) => setUser({ ...user, username: e.target.value })}
+              />
+            </div>
+          </div>
+
           <div>
             <label
               htmlFor="email"
@@ -105,19 +103,6 @@ export default function SignupPage() {
               Email address
             </label>
             <div className="mt-2">
-              {/* <input
-                id="email"
-                {...register("email", {
-                  required: "email is required",
-                  pattern: {
-                    value: /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/gi,
-                    message: "email not valid",
-                  },
-                })}
-                type="email"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              /> */}
-
               <input
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 type="text"
@@ -125,8 +110,6 @@ export default function SignupPage() {
                 value={user.email}
                 onChange={(e) => setUser({ ...user, email: e.target.value })}
               />
-
-              {/* {errors.email && <p className="text-red-600">{errors.email.message}</p>} */}
             </div>
           </div>
 
@@ -140,12 +123,6 @@ export default function SignupPage() {
               </label>
             </div>
             <div className="mt-2">
-              {/* <input
-                id="password"
-                {...register("password", { required: "password is required" })}
-                type="password"
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              /> */}
               <input
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 type="password"
@@ -153,12 +130,8 @@ export default function SignupPage() {
                 value={user.password}
                 onChange={(e) => setUser({ ...user, password: e.target.value })}
               />
-
-              {/* {errors.password && <p className="text-red-600">{errors.password.message}</p>} */}
             </div>
           </div>
-
-       
 
           <div>
             <button

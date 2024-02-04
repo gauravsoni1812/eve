@@ -10,8 +10,7 @@ export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
     const { email, password } = reqBody;
-    console.log(reqBody);
-    console.log(email)
+ 
     //check if user exists
     const user = await User.findOne({ email: email });
     if (!user) {
@@ -35,6 +34,9 @@ export async function POST(request: NextRequest) {
       );
     }
     // create token data
+
+    user.isloggedIn= true;
+
     const tokenData = {
       id: user._id,
       email: user.email,
@@ -42,9 +44,9 @@ export async function POST(request: NextRequest) {
 
     //create Token
     const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET!, {
-      expiresIn: "1d",
+      expiresIn: "2d",
     });
-
+    
     const response = NextResponse.json({
       message: "login successfull",
       success: true,

@@ -10,14 +10,13 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:[true,"Please provide a password"],
     },
-    isVerified:{
+    isloggedIn:{
         type:Boolean,
         default:false
     },
-    isAdmin:{
-        type:Boolean,
-        default:false
-    },
+    username: { type: String, required: true, unique: true },
+    firstname: { type: String, required: true },
+    lastname: {type: String, required: true },
     forgotPasswordToken: String,
     forgotPasswordTokenExpiry: Date,
     verifyToken: String,

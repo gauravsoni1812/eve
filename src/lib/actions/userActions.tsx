@@ -1,50 +1,71 @@
-"use server"
+'use server'
 
-import { connect } from "@/dbConfig/dbConfig"
-import EventUser from "@/models/eventUserModel"
+import { revalidatePath } from 'next/cache'
 
-type CreateEventUser = {
-    firstName: string
-    lastName: string
-    username: string
-    email: string
-    photo: string
-  }
+import User from '@/models/userModel'
+import Order from '@/models/OrderModel'
+import Event from '@/models/eventModel'
+import { handleError } from '@/lib/utils'
 
-  connect()
+import { CreateUserParams, UpdateUserParams } from '@/types'
+import { connect } from '@/dbConfig/dbConfig'
 
-export const createEventUser =  async(user:CreateEventUser)=>{
-   try {
-    const newEventUser = await EventUser.create(user);
 
-   } catch (error) {
-    
-   }
-}
-
-export const getEventUserbyId =  async(userId:string)=>{
+export async function getUserById(userId: string) {
   try {
-  //  const newEventUser = await EventUser.create(user);
+    connect()
 
+    const user = await User.findById(userId)
+
+    if (!user) throw new Error('User not found')
+    return JSON.parse(JSON.stringify(user))
   } catch (error) {
-   
+    handleError(error)
   }
 }
 
-export const updateEventUser =  async(user:CreateEventUser)=>{
+export async function updateUser(clerkId: string, user: UpdateUserParams) {
   try {
-  //  const newEventUser = await EventUser.create(user);
+    connect()
 
+    const updatedUser = await User.findOneAndUpdate({ clerkId }, user, { new: true })
+
+    if (!updatedUser) throw new Error('User update failed')
+    return JSON.parse(JSON.stringify(updatedUser))
   } catch (error) {
-   
+    handleError(error)
   }
 }
 
-export const deleteEventUser =  async(userId:string)=>{
+export async function deleteUser(clerkId: string) {
   try {
-  //  const newEventUser = await EventUser.create(user);
+    connect()
 
+    // Find user to delete
+    const userToDelete = await User.findOne({ clerkId })
+
+    if (!userToDelete) {
+      throw new Error('User not found')
+    }
+
+    // Unlink relationships
+    await Promise.all([
+      // Update the 'events' collection to remove references to the user
+      Event.updateMany(
+        { _id: { $in: userToDelete.events } },
+        { $pull: { organizer: userToDelete._id } }
+      ),
+
+      // Update the 'orders' collection to remove references to the user
+      Order.updateMany({ _id: { $in: userToDelete.orders } }, { $unset: { buyer: 1 } }),
+    ])
+
+    // Delete user
+    const deletedUser = await User.findByIdAndDelete(userToDelete._id)
+    revalidatePath('/')
+
+    return deletedUser ? JSON.parse(JSON.stringify(deletedUser)) : null
   } catch (error) {
-   
+    handleError(error)
   }
 }

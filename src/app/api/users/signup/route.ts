@@ -9,7 +9,7 @@ connect();
 export async function POST(request: NextRequest) {
   try {
     const reqbody = await request.json();
-    const { email, password } = reqbody;
+    const { email, password , firstname, lastname , username } = reqbody;
     console.log(reqbody);
     const user = await User.findOne({ email });    
     if (user) {
@@ -23,11 +23,16 @@ export async function POST(request: NextRequest) {
     //hash password
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
-    const newUser = new User({
+    console.log("akhjdlkaklsdlkasdkljla")
+    const newUser =  new User({
+      lastname,
+      username,
       email,
       password: hashedPassword,
+      firstname,
     });
-
+     
+    console.log(newUser)
    
     const savedUser = await newUser.save();
     // console.log("alskdjlaksjdklsaldjklajasd")
