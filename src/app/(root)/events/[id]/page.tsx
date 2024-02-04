@@ -1,4 +1,5 @@
 import JoinNow from '@/components/shared/JoinNow';
+// import Join from '@/components/shared/join';
 import { Button } from '@/components/ui/button';
 import { getEventById } from '@/lib/actions/eventActions'
 import { getUserById } from '@/lib/actions/userActions';
@@ -10,7 +11,8 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
   const event = await getEventById(id);
  const user = await getUserById(event.organizer._id)
   //  console.log(user.firstname , user.lastname)
- 
+//  console.log(user._id);
+  console.log(id);
    
 
   return (
@@ -48,7 +50,7 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
           </div>
 
           <div>
-            <JoinNow />
+           <JoinNow eventId={id} userId={user._id} />
           </div>
 
           <div className="flex flex-col gap-5">

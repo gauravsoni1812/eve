@@ -37,7 +37,7 @@ export default async function Home ({ searchParams }: SearchParamProps) {
       
       </div>
     </section> 
-
+    
     <section id="events" className="wrapper flex flex-col gap-8 md:gap-12">
       <h2 className="h2-bold">Trust by <br /> Thousands of Events</h2>
      
