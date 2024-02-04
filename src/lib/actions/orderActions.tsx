@@ -1,151 +1,45 @@
-"use server"
+import { connect } from "@/dbConfig/dbConfig"
+import { handleError } from "../utils"
+import User from "@/models/userModel"
+import Cart from "@/models/CartModel"
+import { CreateCartProps } from "@/types"
+import { revalidatePath } from "next/cache"
+import Event from "@/models/eventModel"
 
-import Stripe from 'stripe';
-import { CheckoutOrderParams, CreateOrderParams, GetOrdersByEventParams, GetOrdersByUserParams } from "@/types"
-import { redirect } from 'next/navigation';
-import { handleError } from '../utils';
-
-import Order from '../../models/OrderModel';
-import Event from '../../models/eventModel';
-import {ObjectId} from 'mongodb';
-import User from '../../models/userModel';
-import { connect } from '@/dbConfig/dbConfig';
-
-export const checkoutOrder = async (order: CheckoutOrderParams) => {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-  const price = order.isFree ? 0 : Number(order.price) * 100;
-
+ 
+export async function addtoCart({eventId, userId, path}:CreateCartProps) {
+connect()
   try {
-    const session = await stripe.checkout.sessions.create({
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            unit_amount: price,
-            product_data: {
-              name: order.eventTitle
-            }
-          },
-          quantity: 1
-        },
-      ],
-      metadata: {
-        eventId: order.eventId,
-        buyerId: order.buyerId,
-      },
-      mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/profile`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/`,
-    });
+    console.log(userId);
+    const organizer = await User.findById(userId)
+    console.log(organizer)
+    if (!organizer) throw new Error('Organizer not found')
 
-    redirect(session.url!)
+    const newEvent = await Cart.create({eventId , userId})
+    revalidatePath(path)
+
+    return JSON.parse(JSON.stringify(newEvent))
   } catch (error) {
-    throw error;
+    handleError(error)
   }
 }
 
-export const createOrder = async (order: CreateOrderParams) => {
+export async function getjoinedEvents(userId: string) {
   try {
-    await connect();
-    
-    const newOrder = await Order.create({
-      ...order,
-      event: order.eventId,
-      buyer: order.buyerId,
-    });
+    connect(); 
 
-    return JSON.parse(JSON.stringify(newOrder));
+    const events = await Cart.find({ userId: userId });
+
+    // Use Promise.all to await all promises in the map
+    const orders = await Promise.all(events.map(async (event) => {
+      const newEvent = await Event.findById(event.eventId);
+      return newEvent;
+    }));
+    // console.log(orders)
+    // Return the array of events
+    return orders;
   } catch (error) {
     handleError(error);
-  }
-}
-
-// GET ORDERS BY EVENT
-export async function getOrdersByEvent({ searchString, eventId }: GetOrdersByEventParams) {
-  try {
-    await connect();
-
-
-    if (!eventId) throw new Error('Event ID is required')
-    const eventObjectId = new ObjectId(eventId)
-
-    const orders = await Order.aggregate([
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'buyer',
-          foreignField: '_id',
-          as: 'buyer',
-        },
-      },
-      {
-        $unwind: '$buyer',
-      },
-      {
-        $lookup: {
-          from: 'events',
-          localField: 'event',
-          foreignField: '_id',
-          as: 'event',
-        },
-      },
-      {
-        $unwind: '$event',
-      },
-      {
-        $project: {
-          _id: 1,
-          totalAmount: 1,
-          createdAt: 1,
-          eventTitle: '$event.title',
-          eventId: '$event._id',
-          buyer: {
-            $concat: ['$buyer.firstName', ' ', '$buyer.lastName'],
-          },
-        },
-      },
-      {
-        $match: {
-          $and: [{ eventId: eventObjectId }, { buyer: { $regex: RegExp(searchString, 'i') } }],
-        },
-      },
-    ])
-
-    return JSON.parse(JSON.stringify(orders))
-  } catch (error) {
-    handleError(error)
-  }
-}
-
-// GET ORDERS BY USER
-export async function getOrdersByUser({ userId, limit = 3, page }: GetOrdersByUserParams) {
-  try {
-    await connect();
-
-
-    const skipAmount = (Number(page) - 1) * limit
-    const conditions = { buyer: userId }
-
-    const orders = await Order.distinct('event._id')
-      .find(conditions)
-      .sort({ createdAt: 'desc' })
-      .skip(skipAmount)
-      .limit(limit)
-      .populate({
-        path: 'event',
-        model: Event,
-        populate: {
-          path: 'organizer',
-          model: User,
-          select: '_id firstName lastName',
-        },
-      })
-
-    const ordersCount = await Order.distinct('event._id').countDocuments(conditions)
-
-    return { data: JSON.parse(JSON.stringify(orders)), totalPages: Math.ceil(ordersCount / limit) }
-  } catch (error) {
-    handleError(error)
+    throw error; // Re-throw the error to signal that something went wrong
   }
 }

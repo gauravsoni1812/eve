@@ -148,3 +148,10 @@ export type CreateUserParams = {
     searchParams: { [key: string]: string | string[] | undefined }
   }
   
+
+  export type CreateCartProps = {
+    eventId:string 
+    userId:string
+    path:string
+  }
+  

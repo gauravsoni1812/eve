@@ -6,8 +6,9 @@ import { SearchParamProps } from "@/types";
 import Link from "next/link";
 import React from "react";
 import jwt from "jsonwebtoken"
-import { getOrdersByUser } from "@/lib/actions/orderActions";
+// import { getOrdersByUser } from "@/lib/actions/orderActions";
 import Collection from "@/components/shared/Collection";
+import { getjoinedEvents } from "@/lib/actions/orderActions";
 
 
 const ProfilePage = async ({ searchParams }: SearchParamProps) => {
@@ -19,11 +20,11 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   const ordersPage = Number(searchParams?.ordersPage) || 1;
   const eventsPage = Number(searchParams?.eventsPage) || 1;
 
-  const orders = await getOrdersByUser({ userId , page: ordersPage})
-
-  // const orderedEvents = orders?.data.map((order: IOrder) => order.event) || [];
+  const orders = await getjoinedEvents(userId)
+  //  console.log(orders)
+  // const orderedEvents = orders.map((order: any) => order.event) || [];
   const organizedEvents = await getEventsByUser({ userId, page: eventsPage })
-
+  console.log(organizedEvents?.data)
   return (
     <>
       {/* My Tickets */}
@@ -37,18 +38,18 @@ const ProfilePage = async ({ searchParams }: SearchParamProps) => {
           </div>
         </section>
 
-        {/* <section className="wrapper my-8"> */}
-        {/* <Collection 
-          data={orderedEvents}
-          emptyTitle="No event tickets purchased yet"
-          emptyStateSubtext="No worries - plenty of exciting events to explore!"
-          collectionType="My_Tickets"
+        <section className="wrapper my-8">
+        <Collection 
+          data={orders}
+          emptyTitle="No events have been created yet"
+          emptyStateSubtext="Go create some now"
+          collectionType="Events_Organized"
           limit={3}
-          page={ordersPage}
-          urlParamName="ordersPage"
-          totalPages={orders?.totalPages}
-        /> */}
-        {/* </section> */}
+          page={eventsPage}
+          urlParamName="eventsPage"
+          totalPages={organizedEvents?.totalPages}
+        />
+        </section>
 
         {/* Events Organized */}
         <section className="bg-[#1F1F1F] bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
