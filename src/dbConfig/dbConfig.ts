@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 export async function connect() {
   mongoose
-    .connect(process.env.MONGO_URL!)
+    .connect("mongodb+srv://gauravsoni8800:OLnQSWzx2VvnPlQa@cluster0.7qjv7cd.mongodb.net/?retryWrites=true&w=majority")
     .then(() => {
       console.log("database connected");
     })
