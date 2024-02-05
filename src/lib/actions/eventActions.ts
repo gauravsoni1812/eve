@@ -15,6 +15,7 @@ import {
   GetRelatedEventsByCategoryParams,
 } from '@/types'
 import { connect } from '@/dbConfig/dbConfig'
+import Cart from '@/models/CartModel'
 
 const getCategoryByName = async (name: string) => {
   
@@ -102,7 +103,8 @@ export async function deleteEvent({ eventId, path }: DeleteEventParams) {
 
   try {
     const deletedEvent = await Event.findByIdAndDelete(eventId)
-    if (deletedEvent) revalidatePath(path)
+    const deletefromCart = await Cart.deleteMany({eventId:eventId});
+    if (deletedEvent && deletefromCart) revalidatePath(path)
   } catch (error) {
     handleError(error)
   }

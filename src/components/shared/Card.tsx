@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken'
 import { DeleteConfirmation } from './DeleteConfirmation'
 import { cookies } from 'next/headers'
 import { getUserById } from '@/lib/actions/userActions'
+
 type CardProps = {
   event: IEvent,
   hasOrderLink?: boolean,
@@ -16,13 +17,12 @@ type CardProps = {
 const Card = async({ event, hasOrderLink, hidePrice }: CardProps) => {
     const cookie = cookies();
     const obj =cookie.get("token")
-   
    const user : any = obj ? jwt.decode(obj.value): null;
-  
+  // console.log(event);
   const userId =  user?.id;
   const organiser = await getUserById(userId);
-  const isEventCreator = userId === event.organizer._id.toString();
-
+  const isEventCreator = true;
+ 
   return (
     <div className="group relative flex min-h-[380px] w-full max-w-[400px] flex-col overflow-hidden rounded-xl bg-black shadow-md transition-all hover:shadow-lg md:min-h-[438px]">
       <Link 
